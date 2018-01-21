@@ -1,57 +1,54 @@
 G = 6.6741 * 10**(-11)
 t = 0
-solar_mass = 1.9886 * 10**30
-solar_x = 0
-solar_y = 0
-solar_z = 0
-solar_vx = 0
-solar_vy = 0
-solar_vz = 0
-earth_mass = 5.9722 * 10**24
-earth_x = solar_x + 1.496 * 10**11
-earth_y = solar_y
-earth_z = solar_z
-earth_vx = solar_vx
-earth_vy = solar_vy + 2.9786 * 10**4
-earth_vz = solar_vz
+sun = {
+    'mass': 1.9886 * 10**30,
+    'x': 0,
+    'y': 0,
+    'z': 0,
+    'vx': 0,
+    'vy': 0,
+    'vz': 0,
+}
+earth = {
+    'mass': 5.9722 * 10**24,
+    'x': sun['x'] + 1.496 * 10**11,
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 2.9786 * 10**4,
+    'vz': sun['vz'],
+}
 
 
 def print_status():
     print("Time:", t)
-    print("  Earth position:", earth_x, earth_y, earth_z)
-    print("  Sun position:", solar_x, solar_y, solar_z)
+    print(
+        "  Earth position:",
+        earth['x'],
+        earth['y'],
+        earth['z'],
+    )
+    print(
+        "  Sun position:",
+        sun['x'],
+        sun['y'],
+        sun['z'],
+    )
 
 
 def do_step(duration):
-    global solar_x, solar_y, solar_z, solar_vx, solar_vy, solar_vz
-    global earth_x, earth_y, earth_z, earth_vx, earth_vy, earth_vz
     global t
-    solar_x += solar_vx * duration
-    solar_y += solar_vy * duration
-    solar_z += solar_vz * duration
-    earth_x += earth_vx * duration
-    earth_y += earth_vy * duration
-    earth_z += earth_vz * duration
-    cubed_distance = ((solar_x - earth_x)**2 + (solar_y - earth_y)**2 +
-                      (solar_z - earth_z)**2)**(3 / 2)
-    force_x = G * solar_mass * earth_mass / cubed_distance * (
-        solar_x - earth_x)
-    earth_ax = force_x / earth_mass
-    earth_vx += earth_ax * duration
-    solar_ax = -force_x / solar_mass
-    solar_vx += solar_ax * duration
-    force_y = G * solar_mass * earth_mass / cubed_distance * (
-        solar_y - earth_y)
-    earth_ay = force_y / earth_mass
-    earth_vy += earth_ay * duration
-    solar_ay = -force_y / solar_mass
-    solar_vy += solar_ay * duration
-    force_z = G * solar_mass * earth_mass / cubed_distance * (
-        solar_z - earth_z)
-    earth_az = force_z / earth_mass
-    earth_vz += earth_az * duration
-    solar_az = -force_z / solar_mass
-    solar_vz += solar_az * duration
+    for planet in [earth, sun]:
+        for dimension in ['x', 'y', 'z']:
+            planet[dimension] += planet['v' + dimension] * duration
+    cubed_distance = ((sun['x'] - earth['x'])**2 + (sun['y'] - earth['y'])**2 +
+                      (sun['z'] - earth['z'])**2)**(3 / 2)
+    for dimension in ['x', 'y', 'z']:
+        force = G * sun['mass'] * earth['mass'] / cubed_distance * (
+            sun[dimension] - earth[dimension])
+        for sign, planet in [(1, earth), (-1, sun)]:
+            acceleration = sign * force / planet['mass']
+            planet['v' + dimension] += acceleration * duration
     t += duration
     return
 
