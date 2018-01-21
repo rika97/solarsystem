@@ -1,7 +1,16 @@
+import pygame
+pygame.init()
+screen_width = 800
+screen_height = 600
+DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Solar System Simulator")
+screen = pygame.display.get_surface()
+
 G = 6.6741 * 10**(-11)
 t = 0
 sun = {
     'mass': 1.9886 * 10**30,
+    'radius': 695508000,
     'x': 0,
     'y': 0,
     'z': 0,
@@ -11,6 +20,7 @@ sun = {
 }
 earth = {
     'mass': 5.9722 * 10**24,
+    'radius': 6371000 * 5,
     'x': sun['x'] + 1.496 * 10**11,
     'y': sun['y'],
     'z': sun['z'],
@@ -18,6 +28,7 @@ earth = {
     'vy': sun['vy'] + 2.9786 * 10**4,
     'vz': sun['vz'],
 }
+scale = 10**9
 
 
 def print_status():
@@ -50,7 +61,18 @@ def do_step(duration):
             acceleration = sign * force / planet['mass']
             planet['v' + dimension] += acceleration * duration
     t += duration
+    render()
     return
+
+
+def render():
+    screen.fill((0, 0, 0))
+    for planet in [earth, sun]:
+        pygame.draw.circle(screen, (255, 255, 255),
+                           (int(planet['x'] / scale + screen_width / 2),
+                            int(planet['y'] / scale + screen_height / 2)),
+                           int(planet['radius'] / scale * 100))
+    pygame.display.update()
 
 
 dur = float(input("Enter duration: "))
@@ -59,5 +81,4 @@ steps = int(input("Enter number of steps: "))
 print_status()
 while steps > 0:
     do_step(dur)
-    print_status()
     steps -= 1
