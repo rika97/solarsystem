@@ -8,7 +8,7 @@ music = {
 }
 
 G = 6.6741 * 10**(-11)
-t = 1167882180
+t = 0
 sun = {
     'mass': 1.9886 * 10**30,
     'radius': 695508000 / 5,
@@ -116,6 +116,7 @@ planets = [
     neptune,
 ]
 scale = 10**10
+location = []
 
 
 def print_status():
@@ -169,6 +170,7 @@ def render():
             (int((planet['x'] - camera['x']) / scale + screen_width / 2),
              int((planet['y'] - camera['y']) / scale + screen_height / 2)),
             int(1))
+        location.append(planet.copy())
     screen.blit(canvas, (0, 0))
     for planet in planets:
         pygame.draw.circle(
@@ -192,22 +194,32 @@ def get_input():
 
     if keys_pressed.get(pygame.K_MINUS, False):
         scale *= 1.01
-        canvas.fill((0, 0, 0))
+        redraw_orbits()
     if keys_pressed.get(pygame.K_EQUALS, False):
         scale /= 1.01
-        canvas.fill((0, 0, 0))
+        redraw_orbits()
     if keys_pressed.get(pygame.K_DOWN, False):
         camera['y'] += 2 * scale
-        canvas.fill((0, 0, 0))
+        redraw_orbits()
     if keys_pressed.get(pygame.K_UP, False):
         camera['y'] -= 2 * scale
-        canvas.fill((0, 0, 0))
+        redraw_orbits()
     if keys_pressed.get(pygame.K_RIGHT, False):
         camera['x'] += 2 * scale
-        canvas.fill((0, 0, 0))
+        redraw_orbits()
     if keys_pressed.get(pygame.K_LEFT, False):
         camera['x'] -= 2 * scale
-        canvas.fill((0, 0, 0))
+        redraw_orbits()
+
+
+def redraw_orbits():
+    canvas.fill((0, 0, 0))
+    for planet in location:
+        pygame.draw.circle(
+            canvas, (0, 150, 255),
+            (int((planet['x'] - camera['x']) / scale + screen_width / 2),
+             int((planet['y'] - camera['y']) / scale + screen_height / 2)),
+            int(1))
 
 
 dur = float(input("Enter duration: "))
