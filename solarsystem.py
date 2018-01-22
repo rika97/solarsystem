@@ -4,9 +4,10 @@ from datetime import datetime
 pygame.init()
 screen_width = 800
 screen_height = 600
-DISPLAYSURF = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Solar System Simulator")
-screen = pygame.display.get_surface()
+
+canvas = pygame.Surface((screen_width, screen_height))
 sidereal_year = 365.25636
 tropical_year = 365.24219
 
@@ -24,7 +25,7 @@ sun = {
 }
 earth = {
     'mass': 5.9722 * 10**24,
-    'radius': 6371000 * 5,
+    'radius': 6371000 * 10,
     'x': sun['x'] + 147098291000,
     'y': sun['y'],
     'z': sun['z'],
@@ -72,7 +73,12 @@ def do_step(duration):
 
 
 def render():
-    screen.fill((0, 0, 0))
+    for planet in [earth, sun]:
+        pygame.draw.circle(canvas, (0, 150, 255),
+                           (int(planet['x'] / scale + screen_width / 2),
+                            int(planet['y'] / scale + screen_height / 2)),
+                           int(1))
+    screen.blit(canvas, (0, 0))
     for planet in [earth, sun]:
         pygame.draw.circle(screen, (255, 255, 255),
                            (int(planet['x'] / scale + screen_width / 2),
