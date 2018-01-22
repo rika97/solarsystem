@@ -15,13 +15,33 @@ G = 6.6741 * 10**(-11)
 t = 1167882180
 sun = {
     'mass': 1.9886 * 10**30,
-    'radius': 695508000,
+    'radius': 695508000 / 5,
     'x': 0,
     'y': 0,
     'z': 0,
     'vx': 0,
     'vy': 0,
     'vz': 0,
+}
+mercury = {
+    'mass': 3.3011 * 10**23,
+    'radius': 2439700 * 10,
+    'x': sun['x'] + 69816900000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 47362,  #not accurate
+    'vz': sun['vz'],
+}
+venus = {
+    'mass': 4.8675 * 10**24,
+    'radius': 6051800 * 10,
+    'x': sun['x'] + 108939000000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 35020,  #not accurate
+    'vz': sun['vz'],
 }
 earth = {
     'mass': 5.9722 * 10**24,
@@ -33,7 +53,68 @@ earth = {
     'vy': sun['vy'] + 30280,
     'vz': sun['vz'],
 }
-scale = 10**9
+mars = {
+    'mass': 6.4171 * 10**23,
+    'radius': 3389500 * 10,
+    'x': sun['x'] + 249200000000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 24007,  #not accurate
+    'vz': sun['vz'],
+}
+jupiter = {
+    'mass': 1.8982 * 10**27,
+    'radius': 69911000 * 10,
+    'x': sun['x'] + 816620000000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 13070,  #not accurate
+    'vz': sun['vz'],
+}
+saturn = {
+    'mass': 5.6834 * 10**26,
+    'radius': 58232000 * 10,
+    'x': sun['x'] + 1514500000000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 9680,  #not accurate
+    'vz': sun['vz'],
+}
+uranus = {
+    'mass': 8.6810 * 10**25,
+    'radius': 25362000 * 10,
+    'x': sun['x'] + 3008410000000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 6800,  #not accurate
+    'vz': sun['vz'],
+}
+neptune = {
+    'mass': 1.0243 * 10**26,
+    'radius': 24622000 * 10,
+    'x': sun['x'] + 4537300000000,  #not accurate
+    'y': sun['y'],
+    'z': sun['z'],
+    'vx': sun['vx'],
+    'vy': sun['vy'] + 5430,  #not accurate
+    'vz': sun['vz'],
+}
+planets = [
+    sun,
+    mercury,
+    venus,
+    earth,
+    mars,
+    jupiter,
+    saturn,
+    uranus,
+    neptune,
+]
+scale = 10**10
 
 
 def print_status():
@@ -56,30 +137,37 @@ def print_status():
 
 def do_step(duration):
     global t
-    for planet in [earth, sun]:
+    for planet in planets:
         for dimension in ['x', 'y', 'z']:
             planet[dimension] += planet['v' + dimension] * duration
-    cubed_distance = ((sun['x'] - earth['x'])**2 + (sun['y'] - earth['y'])**2 +
-                      (sun['z'] - earth['z'])**2)**(3 / 2)
-    for dimension in ['x', 'y', 'z']:
-        force = G * sun['mass'] * earth['mass'] / cubed_distance * (
-            sun[dimension] - earth[dimension])
-        for sign, planet in [(1, earth), (-1, sun)]:
-            acceleration = sign * force / planet['mass']
-            planet['v' + dimension] += acceleration * duration
+
+    for i, planet_1 in enumerate(planets):
+        for j in range(i):
+            planet_2 = planets[j]
+
+            cubed_distance = ((planet_1['x'] - planet_2['x'])**2 +
+                              (planet_1['y'] - planet_2['y'])**2 +
+                              (planet_1['z'] - planet_2['z'])**2)**(3 / 2)
+            for dimension in ['x', 'y', 'z']:
+                force = G * planet_1['mass'] * planet_2[
+                    'mass'] / cubed_distance * (
+                        planet_1[dimension] - planet_2[dimension])
+                for sign, planet in [(-1, planet_1), (1, planet_2)]:
+                    acceleration = sign * force / planet['mass']
+                    planet['v' + dimension] += acceleration * duration
     t += duration
     render()
     return
 
 
 def render():
-    for planet in [earth, sun]:
+    for planet in planets:
         pygame.draw.circle(canvas, (0, 150, 255),
                            (int(planet['x'] / scale + screen_width / 2),
                             int(planet['y'] / scale + screen_height / 2)),
                            int(1))
     screen.blit(canvas, (0, 0))
-    for planet in [earth, sun]:
+    for planet in planets:
         pygame.draw.circle(screen, (255, 255, 255),
                            (int(planet['x'] / scale + screen_width / 2),
                             int(planet['y'] / scale + screen_height / 2)),
