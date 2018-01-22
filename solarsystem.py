@@ -1,5 +1,6 @@
 import pygame
 from datetime import datetime
+from collections import deque
 
 sidereal_year = 365.25636
 tropical_year = 365.24219
@@ -116,7 +117,7 @@ planets = [
     neptune,
 ]
 scale = 10**10
-location = []
+location = deque(maxlen=10000)
 
 
 def print_status():
@@ -164,12 +165,13 @@ def do_step(duration):
 
 
 def render():
+    redraw_orbits()
     for planet in planets:
-        pygame.draw.circle(
-            canvas, (0, 150, 255),
-            (int((planet['x'] - camera['x']) / scale + screen_width / 2),
-             int((planet['y'] - camera['y']) / scale + screen_height / 2)),
-            int(1))
+        # pygame.draw.circle(
+        #     canvas, (0, 150, 255),
+        #     (int((planet['x'] - camera['x']) / scale + screen_width / 2),
+        #      int((planet['y'] - camera['y']) / scale + screen_height / 2)),
+        #     int(1))
         location.append(planet.copy())
     screen.blit(canvas, (0, 0))
     for planet in planets:
@@ -214,9 +216,10 @@ def get_input():
 
 def redraw_orbits():
     canvas.fill((0, 0, 0))
-    for planet in location:
+    m = len(location)
+    for i, planet in enumerate(location):
         pygame.draw.circle(
-            canvas, (0, 150, 255),
+            canvas, (0, 150 * i / m, 255 * i / m),
             (int((planet['x'] - camera['x']) / scale + screen_width / 2),
              int((planet['y'] - camera['y']) / scale + screen_height / 2)),
             int(1))
