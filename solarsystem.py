@@ -179,28 +179,35 @@ def render():
     pygame.display.update()
 
 
+keys_pressed = {}
+
+
 def get_input():
     global scale
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_MINUS:
-                scale *= 2
-                canvas.fill((0, 0, 0))
-            elif event.key == pygame.K_EQUALS:
-                scale /= 2
-                canvas.fill((0, 0, 0))
-            elif event.key == pygame.K_UP:
-                camera['y'] += 100 * scale
-                canvas.fill((0, 0, 0))
-            elif event.key == pygame.K_DOWN:
-                camera['y'] -= 100 * scale
-                canvas.fill((0, 0, 0))
-            elif event.key == pygame.K_RIGHT:
-                camera['x'] += 100 * scale
-                canvas.fill((0, 0, 0))
-            elif event.key == pygame.K_LEFT:
-                camera['x'] -= 100 * scale
-                canvas.fill((0, 0, 0))
+            keys_pressed[event.key] = True
+        if event.type == pygame.KEYUP:
+            keys_pressed[event.key] = False
+
+    if keys_pressed.get(pygame.K_MINUS, False):
+        scale *= 1.01
+        canvas.fill((0, 0, 0))
+    if keys_pressed.get(pygame.K_EQUALS, False):
+        scale /= 1.01
+        canvas.fill((0, 0, 0))
+    if keys_pressed.get(pygame.K_DOWN, False):
+        camera['y'] += 2 * scale
+        canvas.fill((0, 0, 0))
+    if keys_pressed.get(pygame.K_UP, False):
+        camera['y'] -= 2 * scale
+        canvas.fill((0, 0, 0))
+    if keys_pressed.get(pygame.K_RIGHT, False):
+        camera['x'] += 2 * scale
+        canvas.fill((0, 0, 0))
+    if keys_pressed.get(pygame.K_LEFT, False):
+        camera['x'] -= 2 * scale
+        canvas.fill((0, 0, 0))
 
 
 dur = float(input("Enter duration: "))
