@@ -239,6 +239,8 @@ pygame.mixer.init()
 sound = pygame.mixer.Sound(music['jupiter'])
 sound.play()
 
+pygame.display.set_icon(pygame.image.load('images/icon.jpg'))
+
 print_status()
 print('\n----\n')
 
