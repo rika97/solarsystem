@@ -99,6 +99,11 @@ neptune = {
     'vy': -2.758234623717188e3,
     'vz': -4.954053085827870e1,
 }
+camera = {
+    'x': 0,
+    'y': 0,
+    'z': 0,
+}
 planets = [
     sun,
     mercury,
@@ -153,23 +158,49 @@ def do_step(duration):
                     planet['v' + dimension] += acceleration * duration
     t += duration
     render()
+    get_input()
     return
 
 
 def render():
-    pygame.event.get()
     for planet in planets:
-        pygame.draw.circle(canvas, (0, 150, 255),
-                           (int(planet['x'] / scale + screen_width / 2),
-                            int(planet['y'] / scale + screen_height / 2)),
-                           int(1))
+        pygame.draw.circle(
+            canvas, (0, 150, 255),
+            (int((planet['x'] - camera['x']) / scale + screen_width / 2),
+             int((planet['y'] - camera['y']) / scale + screen_height / 2)),
+            int(1))
     screen.blit(canvas, (0, 0))
     for planet in planets:
-        pygame.draw.circle(screen, (255, 255, 255),
-                           (int(planet['x'] / scale + screen_width / 2),
-                            int(planet['y'] / scale + screen_height / 2)),
-                           int(planet['radius'] / scale * 100))
+        pygame.draw.circle(
+            screen, (255, 255, 255),
+            (int((planet['x'] - camera['x']) / scale + screen_width / 2),
+             int((planet['y'] - camera['y']) / scale + screen_height / 2)),
+            int(planet['radius'] / scale * 100))
     pygame.display.update()
+
+
+def get_input():
+    global scale
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_MINUS:
+                scale *= 2
+                canvas.fill((0, 0, 0))
+            elif event.key == pygame.K_EQUALS:
+                scale /= 2
+                canvas.fill((0, 0, 0))
+            elif event.key == pygame.K_UP:
+                camera['y'] += 100 * scale
+                canvas.fill((0, 0, 0))
+            elif event.key == pygame.K_DOWN:
+                camera['y'] -= 100 * scale
+                canvas.fill((0, 0, 0))
+            elif event.key == pygame.K_RIGHT:
+                camera['x'] += 100 * scale
+                canvas.fill((0, 0, 0))
+            elif event.key == pygame.K_LEFT:
+                camera['x'] -= 100 * scale
+                canvas.fill((0, 0, 0))
 
 
 dur = float(input("Enter duration: "))
