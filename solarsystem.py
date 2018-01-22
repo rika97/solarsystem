@@ -1,15 +1,11 @@
 import pygame
 from datetime import datetime
 
-pygame.init()
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Solar System Simulator")
-
-canvas = pygame.Surface((screen_width, screen_height))
 sidereal_year = 365.25636
 tropical_year = 365.24219
+music = {
+    'jupiter': 'music/jupiter.ogg',
+}
 
 G = 6.6741 * 10**(-11)
 t = 1167882180
@@ -178,6 +174,17 @@ def render():
 
 dur = float(input("Enter duration: "))
 steps = int(input("Enter number of steps: "))
+
+pygame.init()
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Solar System Simulator")
+canvas = pygame.Surface((screen_width, screen_height))
+
+pygame.mixer.init()
+sound = pygame.mixer.Sound(music['jupiter'])
+sound.play()
 
 print_status()
 print('\n----\n')
