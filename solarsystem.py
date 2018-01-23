@@ -117,7 +117,7 @@ planets = [
     neptune,
 ]
 scale = 10**10
-location = deque(maxlen=10000)
+location = deque(maxlen=15000)
 
 
 def print_status():
