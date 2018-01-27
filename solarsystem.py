@@ -118,11 +118,17 @@ planets = [
 ]
 scale = 10**10
 location = deque(maxlen=15000)
+selected_planet = earth
+pygame.font.init()
+title_font = pygame.font.Font("font/star.ttf", 20)
+label_font = pygame.font.Font("font/menlo.ttc", 20)
 
 
 def print_status():
     dt = datetime.fromtimestamp(t)
     date_string = dt.strftime('%Y-%m-%d %H:%M:%S')
+    text_image = label_font.render(date_string, True, (255, 255, 255))
+    screen.blit(text_image, (550, 580))
     print("\rTime: " + date_string, end='')
     # print(
     #     "  Earth position:",
@@ -180,6 +186,7 @@ def render():
             (int((planet['x'] - camera['x']) / scale + screen_width / 2),
              int((planet['y'] - camera['y']) / scale + screen_height / 2)),
             int(planet['radius'] / scale * 100))
+    print_status()
     pygame.display.update()
 
 
@@ -247,4 +254,3 @@ print('\n----\n')
 while steps > 0:
     do_step(dur)
     steps -= 1
-    print_status()
