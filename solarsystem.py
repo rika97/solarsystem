@@ -201,6 +201,9 @@ def render():
         r = int(planet.radius / scale * 100)
         screen_positions[planet] = (x, y, r)
         pygame.draw.circle(screen, (255, 255, 255), (x, y), r)
+        if planet is selected_planet:
+            pygame.draw.circle(screen, (0, 200, 255), (x, y),
+                               max(r + 5, int(r * 1.5)), 1)
     print_status()
     pygame.display.update()
 
@@ -209,7 +212,7 @@ keys_pressed = {}
 
 
 def get_input():
-    global scale
+    global scale, selected_planet
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             keys_pressed[event.key] = True
@@ -225,8 +228,12 @@ def get_input():
             elif event.button == 1:
                 x, y = event.pos
                 distance_fn = partial(distance_to_click, x, y)
-                closest_planet = min(planets, key=distance_fn)
-                print(closest_planet.name)
+                closest = min(planets, key=distance_fn)
+                if distance_fn(closest) < 20:
+                    selected_planet = closest
+                    print(selected_planet.name)
+                else:
+                    selected_planet = None
 
     if keys_pressed.get(pygame.K_MINUS, False):
         scale *= 1.1
@@ -235,16 +242,16 @@ def get_input():
         scale /= 1.1
         redraw_orbits()
     if keys_pressed.get(pygame.K_DOWN, False):
-        camera['y'] += 2 * scale
+        camera['y'] += 10 * scale
         redraw_orbits()
     if keys_pressed.get(pygame.K_UP, False):
-        camera['y'] -= 2 * scale
+        camera['y'] -= 10 * scale
         redraw_orbits()
     if keys_pressed.get(pygame.K_RIGHT, False):
-        camera['x'] += 2 * scale
+        camera['x'] += 10 * scale
         redraw_orbits()
     if keys_pressed.get(pygame.K_LEFT, False):
-        camera['x'] -= 2 * scale
+        camera['x'] -= 10 * scale
         redraw_orbits()
 
 
