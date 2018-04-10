@@ -1,6 +1,7 @@
 import pygame
 from datetime import datetime
 from collections import deque
+from functools import partial
 from planet import Planet
 
 sidereal_year = 365.25636
@@ -176,6 +177,14 @@ def do_step(duration):
     return
 
 
+screen_positions = {}
+
+
+def distance_to_click(x, y, planet):
+    u, v, r = screen_positions[planet]
+    return ((x - u)**2 + (y - v)**2)**0.5 - r
+
+
 def render():
     redraw_orbits()
     for planet in planets:
@@ -187,11 +196,11 @@ def render():
         location.append(planet.copy())
     screen.blit(canvas, (0, 0))
     for planet in planets:
-        pygame.draw.circle(
-            screen, (255, 255, 255),
-            (int((planet.position.x - camera['x']) / scale + screen_width / 2),
-             int((planet.position.y - camera['y']) / scale + screen_height / 2)
-             ), int(planet.radius / scale * 100))
+        x = int((planet.position.x - camera['x']) / scale + screen_width / 2)
+        y = int((planet.position.y - camera['y']) / scale + screen_height / 2)
+        r = int(planet.radius / scale * 100)
+        screen_positions[planet] = (x, y, r)
+        pygame.draw.circle(screen, (255, 255, 255), (x, y), r)
     print_status()
     pygame.display.update()
 
@@ -206,12 +215,24 @@ def get_input():
             keys_pressed[event.key] = True
         if event.type == pygame.KEYUP:
             keys_pressed[event.key] = False
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 4:
+                scale *= 1.1
+                redraw_orbits()
+            elif event.button == 5:
+                scale /= 1.1
+                redraw_orbits()
+            elif event.button == 1:
+                x, y = event.pos
+                distance_fn = partial(distance_to_click, x, y)
+                closest_planet = min(planets, key=distance_fn)
+                print(closest_planet.name)
 
     if keys_pressed.get(pygame.K_MINUS, False):
-        scale *= 1.01
+        scale *= 1.1
         redraw_orbits()
     if keys_pressed.get(pygame.K_EQUALS, False):
-        scale /= 1.01
+        scale /= 1.1
         redraw_orbits()
     if keys_pressed.get(pygame.K_DOWN, False):
         camera['y'] += 2 * scale
